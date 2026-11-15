@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Rust
+target/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Notes that belong to one machine
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Downloaded datasets, model weights and run outputs
+.cache/
+data/
+models/
+
+# Editors and operating systems
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

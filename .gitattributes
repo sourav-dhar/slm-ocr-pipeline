@@ -1,0 +1,11 @@
+# Store text with LF endings on every platform.
+* text=auto eol=lf
+
+# Never treat these as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.ico binary

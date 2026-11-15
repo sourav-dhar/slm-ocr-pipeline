@@ -1,0 +1,12 @@
+slm-ocr-pipeline
+Copyright 2026 Sourav Dhar
+
+This project is an independent, from-scratch re-implementation of the system
+taught in the "Production-Grade SLM-Powered OCR Course" by The Neural Maze
+(Miguel Otero Pedrido and Antonio Zarauz Moreno):
+
+    https://github.com/neural-maze/production-ocr-course
+    studied at commit 3271469, licensed under the Apache License, Version 2.0
+
+No source code from that repository is included. Material later adapted from
+it, or from any other project, will be listed below with its licence.
