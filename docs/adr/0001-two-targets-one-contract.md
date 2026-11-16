@@ -1,6 +1,6 @@
 # Two deployment targets behind one contract
 
-The reference runs everything on Kubernetes with GPU node pools. We cannot afford standing GPU clusters, and the only real-GPU venue we have is Modal, which is serverless and has no node pools, KEDA or shared volumes. We therefore ship one portable pipeline with two targets that satisfy the same contract: a Kubernetes target (Rust API, Redis, worker, KEDA) proven in CI on kind with a simulator and fake GPUs, and a Modal target (a small Python app on Modal's own job queue and autoscaler) that is the only place real GPUs run.
+The reference runs everything on Kubernetes with GPU node pools. We cannot afford standing GPU clusters, and the only real-GPU venue we have is Modal, which is serverless and has no node pools, KEDA or shared volumes. We therefore ship one portable pipeline with two targets that satisfy the same contract: a Kubernetes target (Rust API, Redis, worker, KEDA) proven in CI on kind with a simulator and fake GPUs, and a Modal target (a small Python app that uses Modal's function calls for job delivery (spawn a call, then poll its result) and Modal's autoscaler) that is the only place real GPUs run.
 
 ## Considered options
 

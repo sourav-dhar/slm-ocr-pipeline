@@ -2,12 +2,14 @@
 
 | | |
 |---|---|
-| Version | v1.2 — 2026-11-16 (v1 2026-11-15; v1.1 adds section 11; v1.2 adds section 12) |
-| Reference commit | `3271469` on `main` (2026-09-24), identical to upstream HEAD on the analysis date |
+| Version | v1.3 — 2026-11-16 (v1 2026-11-15; v1.1 adds section 11; v1.2 adds section 12; v1.3 adds the wording note and removes one unsourced sentence from section 6.2) |
+| Reference commit | `3271469` on `main` (2026-09-24), identical to the HEAD of the reference's GitHub repository on the analysis date |
 | Purpose | Shared ground truth for the rebuild. Read this before planning or implementing any milestone. |
 | Status | Analysis only. The questions listed in section 10 were settled on 2026-11-16; see `plans/01-decisions.md`. |
 
 **How to read the evidence tags.** `[code]` = read directly in the reference repository. `[sdk]` = read in the `glmocr==0.1.4` wheel source. `[primary]` = read in a primary source (model card, vLLM source/docs, paper). `[vendor]` = a number published by whoever built the thing, not independently measured. `[inferred]` = reasoning from verified facts, not observed at runtime. Nothing in this analysis was executed against a GPU; every runtime behaviour is `[inferred]` until we measure it.
+
+**Wording.** This file predates `GLOSSARY.md` and is kept as a dated record, so its older words stay as written. Read *VLM* and *OCR model* as *recogniser*; *task*, where it names the reference's queued unit of work (`task:<id>`, defects R1–R5), as *job*; *end-to-end*, as a pipeline shape, as *single-stage*; and *layout-first* as *two-stage*.
 
 ---
 
@@ -134,17 +136,17 @@ The weekly folders are not ancestors of the root code; they are later, separatel
 |---|---|---|---|
 | Week 3, first drop | `rednote-hilab/dots.mocr` | vLLM only | Replaced a week later (`717a3d1`) |
 | Week 3 | `baidu/Unlimited-OCR` (3B, single-stage) | vLLM on one A100 | `MAX_MODEL_LEN=32768`, `MAX_NUM_BATCHED_TOKENS=65536`, `MAX_NUM_SEQS=64`, 10 images per prompt |
-| Week 4 | same | **Synchronous** Rust gateway (axum 0.7, 1,430 lines) in front of vLLM | `POST /process` (JSON base64) and `/process-stream` (SSE); rasterises with `pdftoppm` at 150 DPI; up to 10 pages per VLM call; layout comes from the model's own `<|det|>` tags. No queue, no Redis, no layout model |
+| Week 4 | same | **Synchronous** Rust gateway (axum 0.7, 1,430 lines) in front of vLLM | `POST /process` (JSON base64) and `/process-stream` (SSE); rasterises with `pdftoppm` at 150 DPI; up to 10 pages per VLM call; layout comes from the model's own `<\|det\|>` tags. No queue, no Redis, no layout model |
 | Week 5 | `Qwen/Qwen3.5-2B` | Async: Producer → Redis → Worker (SDK + PP-DocLayoutV3 on T4) → vLLM | Batch 8 / 150 ms; charts and images **are** described |
 | Week 6 | same | + MCP server, APIM walkthrough | `worker.py` here still has the LPOP bug |
 | Root `main` | `Qwen/Qwen3.5-4B` | Async, 4 pools | Batch 4 / 100 ms; charts and images **skipped** |
 
 Why the week-4 → week-5 redesign happened is never argued in the repo. The likely drivers `[inferred]`: GPU cold starts take minutes while a synchronous HTTP request has a 300 s budget; a queue length is a scaling signal that exists when replicas are at zero; and a two-stage pipeline needs a Python GPU worker for the layout model.
 
-### 3.1 Two unmerged upstream branches (where the authors are heading)
+### 3.1 Two unmerged branches of the reference (where the authors are heading)
 
-- **`origin/restructure-repo`** (2026-10-14): one final system under `services/` + `deploy/`, a `course/` folder with a page per week (week 0–6, with checkable deliverables), `docs/api.md` and `docs/architecture.md` split out of the README, a single root `Makefile` (`make up / test / down`), `scripts/test_submit.py`. AKS only; GKE docs deleted; model back to Qwen 3.5 2B. Its week-3 page lists enabling MTP as a *stretch exercise*.
-- **`origin/feat/local_dpl`** (2026-10-28): a different, local-first system. FastAPI + Inngest durable workflows + PostgreSQL + a web UI, with an `OcrEngine` abstract base class and two engines (Apple MLX; llama.cpp server via Docker). Model is single-stage `Unlimited-OCR-2`. Records per-batch telemetry (latency, prompt/generation tokens per second, pages per second). First appearance of `pyproject.toml`, ruff, mypy and three unit tests.
+- **The `restructure-repo` branch** (2026-10-14): one final system under `services/` + `deploy/`, a `course/` folder with a page per week (week 0–6, with checkable deliverables), `docs/api.md` and `docs/architecture.md` split out of the README, a single root `Makefile` (`make up / test / down`), `scripts/test_submit.py`. AKS only; GKE docs deleted; model back to Qwen 3.5 2B. Its week-3 page lists enabling MTP as a *stretch exercise*.
+- **The `feat/local_dpl` branch** (2026-10-28): a different, local-first system. FastAPI + Inngest durable workflows + PostgreSQL + a web UI, with an `OcrEngine` abstract base class and two engines (Apple MLX; llama.cpp server via Docker). Model is single-stage `Unlimited-OCR-2`. Records per-batch telemetry (latency, prompt/generation tokens per second, pages per second). First appearance of `pyproject.toml`, ruff, mypy and three unit tests.
 
 Useful signals from these: the authors are consolidating copies into one source of truth, moving toward a pluggable engine interface, and adding durable execution and telemetry — all gaps identified independently below.
 
@@ -258,7 +260,7 @@ Avoid for an open-source project without reading the licence: OXR-1.0 (custom), 
 
 - An A100 80GB is not needed for memory. A 4B model is about 10 GB of weights; 0.9–1.3B models are about 2–3 GB. A single 24 GB card can hold layout detection and the VLM together `[inferred]`.
 - The T4 is a poor VLM host (no bfloat16) but fine for layout detection.
-- AWS has no single-A100 instance. Upstream's own AWS port used an L40S 48 GB (`g6e`) and noted that the A100 token budget must be retuned or the card OOMs at startup.
+- AWS has no single-A100 instance.
 
 | GPU | Indicative on-demand price (USD/h) |
 |---|---|
@@ -450,7 +452,7 @@ Planning estimate for the whole project on Modal, before free credits: about $80
 
 ## 13. Sources
 
-- The reference repository at `3271469`, plus `origin/restructure-repo` (`a9d1c3d`) and `origin/feat/local_dpl` (`02a27e1`).
+- The reference repository at `3271469`, plus its `restructure-repo` branch (`a9d1c3d`) and its `feat/local_dpl` branch (`02a27e1`).
 - `glmocr==0.1.4` wheel source (PyPI) and `zai-org/GLM-OCR` on GitHub.
 - vLLM v0.21.0 source and docs; vLLM recipes for Qwen3.5 and GLM-OCR; vLLM release notes.
 - Hugging Face model cards: `Qwen/Qwen3.5-4B`, `PaddlePaddle/PP-DocLayoutV3_safetensors`, `zai-org/GLM-OCR`, and those listed in section 6.1.

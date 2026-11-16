@@ -1,8 +1,8 @@
 # Contributing
 
-This page describes how a change reaches `main`. The same path applies to every change, whoever writes it. The rules are decisions D25–D29 in [`plans/01-decisions.md`](plans/01-decisions.md); if this page and that file disagree, that file is right.
+This page describes how a change reaches `main`. The same path applies to every change, whoever writes it. Decisions D25–D29 in [`plans/01-decisions.md`](plans/01-decisions.md) are the settled core of this workflow, and that file wins wherever this page disagrees with it. The step-level detail (branch names, what a description holds, how a review is answered) mirrors [`CLAUDE.md`](CLAUDE.md). A change to the workflow updates both files in the same pull request.
 
-Some of the checks named here are still being built during milestone 1 (see the [task breakdown](plans/milestone-01-foundation.md)). Until a check exists, the pull request says how the change was verified by hand.
+Some of the checks and repository settings named here are still being put in place during milestone 1 (see the [task breakdown](plans/milestone-01-foundation.md)). Until a check exists, the pull request says how the change was verified by hand. Until the repository allows only squash merges and takes the commit message from the pull request, the owner chooses "Squash and merge" and sets the commit title and body by hand.
 
 ## The path of a change
 
@@ -70,4 +70,4 @@ A **milestone** is done when all of the following are true:
 - **[`plans/`](plans/)** holds the reference analysis, the settled decisions, the milestone plan and the current milestone's task breakdown.
 - **[`docs/adr/`](docs/adr/)** holds the decision records. A new choice that is hard to reverse, surprising and a real trade-off gets a record in the same pull request. Changing a settled decision is the owner's call, so raise it before building around it.
 - **[`GLOSSARY.md`](GLOSSARY.md)** defines the project's vocabulary. Use its terms in code, documentation and pull requests. In particular, a *job* is the runtime unit and a *task* is a unit of development work.
-- **[`CLAUDE.md`](CLAUDE.md)** gives this same workflow as instructions for AI coding agents.
+- **[`CLAUDE.md`](CLAUDE.md)** gives this same workflow as instructions for AI coding agents. Its Rules section also holds project rules that apply to every contributor: material adapted from another project is recorded in [`NOTICE`](NOTICE), only measured figures are published, and GPU spend and outward actions wait for the owner; [`docs/adr/0005-licence-and-terms-constraints.md`](docs/adr/0005-licence-and-terms-constraints.md) adds a licence check for each new dependency.

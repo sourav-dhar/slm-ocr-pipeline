@@ -83,7 +83,7 @@ Terms in **bold** are defined in `GLOSSARY.md`. "Ref. week" is the reference cou
 
 **Goal.** The whole submit-and-poll service, deployable with one command.
 
-**Scope.** A small Python application exposing the contract on Modal, using Modal's own job queue and autoscaler; result storage with expiry; proxy authentication.
+**Scope.** A small Python application exposing the contract on Modal, using Modal's function calls for job delivery (spawn a call, then poll its result) and Modal's autoscaler; result storage with expiry; proxy authentication.
 
 **Exit evidence.** The contract test suite passes against the deployed Modal target; cold start measured end to end.
 
